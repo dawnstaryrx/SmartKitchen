@@ -1,89 +1,38 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "@/pages/home"
+import LoginPage from "@/pages/auth/login"
+import RegisterPage from "@/pages/auth/register"
+import DashboardLayout from "@/layouts/dashboard-layout"
+import MyIngredientsPage from "@/pages/ingredients/my-ingredients"
+import IngredientKnowledgePage from "@/pages/ingredients/knowledge"
+import StockWarningPage from "@/pages/ingredients/stock-warning"
+import ShoppingListPage from "@/pages/ingredients/shopping-list"
+import MyRecipesPage from "@/pages/recipes/my-recipes"
+import PublicRecipesPage from "@/pages/recipes/public-recipes"
+import MyKitchenwarePage from "@/pages/kitchenware/my-kitchenware"
+import KitchenwareKnowledgePage from "@/pages/kitchenware/knowledge"
+import AiAssistantPage from "@/pages/ai-assistant"
 
 function App() {
   return (
-    <div className="min-h-screen bg-slate-100 p-8">
-      <div className="mx-auto max-w-4xl">
-        {/* 标题 */}
-        <h1 className="mb-8 text-center text-4xl font-bold text-slate-900">
-          SmartKitchen
-        </h1>
-
-        {/* 卡片区域 */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>菜谱管理</CardTitle>
-              <CardDescription>
-                管理和维护菜谱数据
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                进入模块
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>AI 菜谱生成</CardTitle>
-              <CardDescription>
-                基于 AI 自动生成菜谱
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="secondary" className="w-full">
-                开始生成
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>设备监控</CardTitle>
-              <CardDescription>
-                查看厨房设备运行状态
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full">
-                查看详情
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tailwind 测试区域 */}
-        <div className="mt-10 rounded-xl border bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold">
-            TailwindCSS 测试
-          </h2>
-
-          <div className="flex flex-wrap gap-3">
-            <span className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700">
-              React
-            </span>
-
-            <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
-              TailwindCSS
-            </span>
-
-            <span className="rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-700">
-              shadcn/ui
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route element={<DashboardLayout />}>
+        <Route path="/ingredients/my-ingredients" element={<MyIngredientsPage />} />
+        <Route path="/ingredients/knowledge" element={<IngredientKnowledgePage />} />
+        <Route path="/ingredients/stock-warning" element={<StockWarningPage />} />
+        <Route path="/ingredients/shopping-list" element={<ShoppingListPage />} />
+        <Route path="/recipes/my-recipes" element={<MyRecipesPage />} />
+        <Route path="/recipes/public" element={<PublicRecipesPage />} />
+        <Route path="/kitchenware/my-kitchenware" element={<MyKitchenwarePage />} />
+        <Route path="/kitchenware/knowledge" element={<KitchenwareKnowledgePage />} />
+        <Route path="/ai-assistant" element={<AiAssistantPage />} />
+      </Route>
+    </Routes>
+  )
 }
 
-export default App;
+export default App
+
