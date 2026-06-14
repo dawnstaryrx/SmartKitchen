@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     # ========================
     # 项目
     # ========================
-    APP_NAME: str = "SmartKitchen"
-    APP_ENV: str = "dev"
+    APP_NAME: str
+    APP_ENV: str
 
     # ========================
     # PostgreSQL
@@ -20,18 +20,17 @@ class Settings(BaseSettings):
     # ========================
     # Redis
     # ========================
-    REDIS_HOST: str = "121.43.175.61"
+    REDIS_HOST: str
     REDIS_PORT: int = 6379
-    REDIS_PASSWORD: str = "Password0k$"
+    REDIS_PASSWORD: str
 
     # ========================
     # SMTP
     # ========================
-    MAIL_USERNAME: str = "dawnstar001@126.com"
-    MAIL_PASSWORD: str = "TTumgDp2xqC9YvSk"
-
-    MAIL_FROM: str = "dawnstar001@126.com"
-    MAIL_SERVER: str = "smtp.126.com"
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_SERVER: str
     MAIL_PORT: int = 25
     MAIL_SSL_TLS: bool = False
     MAIL_STARTTLS: bool = False
