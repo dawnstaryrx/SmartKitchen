@@ -8,7 +8,28 @@ import {
   Bot,
   Menu,
   X,
+  User,
+  LogOut,
+  ChevronDown,
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { useAuth } from "@/context/AuthContext"
+import { toast } from "sonner"
 
 interface NavItem {
   label: string
@@ -26,7 +47,9 @@ const topNavItems: NavItem[] = [
 export default function SiteHeader() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { user, isLogin, logout } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
 
   const isActive = (path: string) => {
     if (path === "/ai-assistant") return location.pathname === path
@@ -37,6 +60,17 @@ export default function SiteHeader() {
     setMenuOpen(false)
     navigate(path)
   }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      window.location.href = "/"
+    } catch {
+      toast.error("退出失败")
+    }
+  }
+
+  const displayName = user ? (user.nickname || user.email) : ""
 
   return (
     <>
@@ -66,12 +100,38 @@ export default function SiteHeader() {
         </div>
 
         <nav className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" asChild>
-            <Link to="/login">登录</Link>
-          </Button>
-          <Button asChild>
-            <Link to="/register">注册</Link>
-          </Button>
+          {isLogin ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  {displayName}
+                  <ChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <User />
+                  个人中心
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => setLogoutDialogOpen(true)}
+                >
+                  <LogOut />
+                  退出登录
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/login">登录</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/register">注册</Link>
+              </Button>
+            </>
+          )}
         </nav>
 
         <Button
@@ -103,22 +163,62 @@ export default function SiteHeader() {
               )
             })}
             <div className="my-2 border-t" />
-            <Button
-              variant="ghost"
-              className="justify-start"
-              onClick={() => handleNav("/login")}
-            >
-              登录
-            </Button>
-            <Button
-              className="justify-start"
-              onClick={() => handleNav("/register")}
-            >
-              注册
-            </Button>
+            {isLogin ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => handleNav("/profile")}
+                >
+                  <User />
+                  个人中心
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="justify-start text-destructive"
+                  onClick={() => { setMenuOpen(false); setLogoutDialogOpen(true) }}
+                >
+                  <LogOut />
+                  退出登录
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => handleNav("/login")}
+                >
+                  登录
+                </Button>
+                <Button
+                  className="justify-start"
+                  onClick={() => handleNav("/register")}
+                >
+                  注册
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       )}
+
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定退出登录吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              退出后将需要重新登录才能访问个人功能。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleLogout}>
+              确认退出
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

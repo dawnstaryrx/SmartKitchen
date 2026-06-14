@@ -1,12 +1,41 @@
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link } from "react-router-dom"
-import { Mail, Lock } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { Mail, Lock, Loader2 } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
 import SiteHeader from "@/components/site-header"
 
 export default function LoginPage() {
+  const navigate = useNavigate()
+  const { login, isLogin, loading: authLoading } = useAuth()
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  if (!authLoading && isLogin) {
+    navigate("/", { replace: true })
+  }
+
+  const handleSubmit = async () => {
+    if (!email) { setError("请输入邮箱"); return }
+    if (!password) { setError("请输入密码"); return }
+    setError("")
+    setLoading(true)
+    try {
+      await login(email, password)
+      window.location.href = "/"
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "登录失败")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -17,6 +46,12 @@ export default function LoginPage() {
             <CardDescription>欢迎回来，请登录你的账号</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
+            {error && (
+              <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email">邮箱</Label>
               <div className="relative">
@@ -26,6 +61,8 @@ export default function LoginPage() {
                   type="email"
                   placeholder="请输入邮箱"
                   className="pl-8"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -39,11 +76,17 @@ export default function LoginPage() {
                   type="password"
                   placeholder="请输入密码"
                   className="pl-8"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                 />
               </div>
             </div>
 
-            <Button className="w-full">登录</Button>
+            <Button className="w-full" disabled={loading} onClick={handleSubmit}>
+              {loading && <Loader2 className="size-4 animate-spin" />}
+              {loading ? "登录中..." : "登录"}
+            </Button>
 
             <p className="text-center text-sm text-muted-foreground">
               还没有账号？{" "}

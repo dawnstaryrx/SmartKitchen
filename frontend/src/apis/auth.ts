@@ -1,14 +1,21 @@
-import { API_BASE_URL } from "@/config"
+import request from "@/lib/request"
+
+export interface UserInfo {
+  id: number
+  email: string
+  nickname: string
+  avatar: string | null
+  is_admin: boolean
+}
+
+export interface LoginResponse {
+  token: string
+  user_info: UserInfo
+}
 
 export async function sendCode(email: string) {
-  const res = await fetch(`${API_BASE_URL}/auth/send-code`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.detail ?? "发送验证码失败")
-  return data as { message: string }
+  const res = await request.post("/auth/send-code", { email })
+  return res.data as { message: string }
 }
 
 export async function register(
@@ -17,12 +24,29 @@ export async function register(
   password: string,
   confirm_password: string
 ) {
-  const res = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, code, password, confirm_password }),
+  const res = await request.post("/auth/register", {
+    email,
+    code,
+    password,
+    confirm_password,
   })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.detail ?? "注册失败")
-  return data as { message: string; user_id: number; email: string }
+  return res.data as { message: string; user_id: number; email: string }
+}
+
+export async function login(email: string, password: string) {
+  const res = await request.post<LoginResponse>("/auth/login", {
+    email,
+    password,
+  })
+  return res.data
+}
+
+export async function logout() {
+  const res = await request.post("/auth/logout")
+  return res.data
+}
+
+export async function getMe() {
+  const res = await request.get<UserInfo>("/auth/me")
+  return res.data
 }

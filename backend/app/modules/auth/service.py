@@ -5,8 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.common.email import send_email_code
+from app.core.config import settings
 from app.core.redis import redis_client
 from app.core.security import hash_password
+from app.core.security import verify_password
+from app.core.security import create_access_token
 
 from app.modules.user.models import User
 
@@ -101,3 +104,63 @@ class AuthService:
         )
 
         return new_user
+
+    @staticmethod
+    async def login(
+            db: Session,
+            email: str,
+            password: str
+    ):
+        result = db.execute(
+            select(User).where(
+                User.email == email
+            )
+        )
+
+        user = result.scalar_one_or_none()
+
+        if not user:
+            raise HTTPException(
+                status_code=400,
+                detail="用户不存在"
+            )
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=400,
+                detail="账号已被禁用"
+            )
+
+        if not verify_password(password, user.password_hash):
+            raise HTTPException(
+                status_code=400,
+                detail="密码错误"
+            )
+
+        token = create_access_token(
+            data={
+                "user_id": user.id,
+                "email": user.email
+            }
+        )
+
+        redis_client.set(
+            f"auth:token:{user.id}",
+            token,
+            ex=86400
+        )
+
+        return {
+            "token": token,
+            "user_id": user.id
+        }
+
+    @staticmethod
+    async def logout(
+            user_id: int
+    ):
+        redis_client.delete(
+            f"auth:token:{user_id}"
+        )
+
+        return {"message": "退出成功"}

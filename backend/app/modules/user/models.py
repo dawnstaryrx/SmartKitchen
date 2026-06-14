@@ -79,3 +79,13 @@ class User(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+
+    last_login_time: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True
+    )
+
+    last_login_ip: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True
+    )

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom"
 import HomePage from "@/pages/home"
 import LoginPage from "@/pages/auth/login"
 import RegisterPage from "@/pages/auth/register"
@@ -12,6 +12,8 @@ import PublicRecipesPage from "@/pages/recipes/public-recipes"
 import MyKitchenwarePage from "@/pages/kitchenware/my-kitchenware"
 import KitchenwareKnowledgePage from "@/pages/kitchenware/knowledge"
 import AiAssistantPage from "@/pages/ai-assistant"
+import ProfilePage from "@/pages/profile"
+import ProtectedRoute from "@/components/auth/ProtectedRoute"
 
 function App() {
   return (
@@ -29,10 +31,10 @@ function App() {
         <Route path="/kitchenware/my-kitchenware" element={<MyKitchenwarePage />} />
         <Route path="/kitchenware/knowledge" element={<KitchenwareKnowledgePage />} />
         <Route path="/ai-assistant" element={<AiAssistantPage />} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       </Route>
     </Routes>
   )
 }
 
 export default App
-
